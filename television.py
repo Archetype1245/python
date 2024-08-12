@@ -32,4 +32,3 @@ class Television:
 
     def __str__(self):
         pass
-
