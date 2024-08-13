@@ -1,6 +1,14 @@
 import unittest
 import television
 
+"""
+I opted to access the private variables via their obfuscated names for the unit tests,
+rather than using the __str__ method and comparing the resulting strings.
+
+I think with more freedom in the assignment, I would have just included getter/setter methods
+and accessed those for unit testing purposes, as that's likely what I'd be doing with other languages anyway.
+"""
+
 
 class TestTelevision(unittest.TestCase):
 
@@ -34,10 +42,25 @@ class TestTelevision(unittest.TestCase):
         self.tv.mute()
         self.assertFalse(self.tv._Television__muted)
 
-        # check if muting/unmuting retains the original volume value
+        # check if tv gets properly muted when it has a volume value other than the minimum
         self.tv._Television__volume = 2
         self.tv.mute()
         self.assertTrue(self.tv._Television__muted)
+
+        # check if unmuting properly retains the original volume value that was held when muted
+        self.tv.mute()
+        self.assertEqual(self.tv._Television__volume, 2)
+
+        # check that unmuting does nothing if the tv is off
+        self.tv.mute()
+        self.assertTrue(self.tv._Television__muted)  # ensures tv is muted
+        self.tv.power()
+        self.assertFalse(self.tv._Television__status)  # ensures tv is off
+        self.tv.mute()
+        self.assertEqual(self.tv._Television__volume, television.Television.MIN_VOLUME)
+
+        # checks that turning a muted tv off/on and then unmuting retains expected volume value
+        self.tv.power()
         self.tv.mute()
         self.assertEqual(self.tv._Television__volume, 2)
 
@@ -80,6 +103,11 @@ class TestTelevision(unittest.TestCase):
         self.tv.volume_up()
         self.assertEqual(self.tv._Television__volume, television.Television.MIN_VOLUME + 1)
 
+        # checks that volume_up method properly unmutes and increments the volume when the tv is on and muted
+        self.tv.mute()
+        self.tv.volume_up()
+        self.assertEqual(self.tv._Television__volume, television.Television.MIN_VOLUME + 2)
+
         # checks that the volume_up method does not increment the volume value if volume is already at max
         self.tv._Television__volume = television.Television.MAX_VOLUME
         self.tv.volume_up()
@@ -99,6 +127,11 @@ class TestTelevision(unittest.TestCase):
         self.tv._Television__volume = television.Television.MAX_VOLUME
         self.tv.volume_down()
         self.assertEqual(self.tv._Television__volume, television.Television.MAX_VOLUME - 1)
+
+        # checks that volume_down method properly unmutes and decrements the volume when the tv is on and muted
+        self.tv.mute()
+        self.tv.volume_down()
+        self.assertEqual(self.tv._Television__volume, television.Television.MAX_VOLUME - 2)
 
 
 if __name__ == '__main__':
