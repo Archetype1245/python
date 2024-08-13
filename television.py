@@ -64,7 +64,7 @@ class Television:
 
     def volume_down(self) -> None:
         """
-        Decreased the tv volume (when the tv is on). Does nothing if the volume value is at the minimum value.
+        Decreases the tv volume (when the tv is on). Does nothing if the volume value is at the minimum value.
         """
         if self.__status:
             if self.__muted:
